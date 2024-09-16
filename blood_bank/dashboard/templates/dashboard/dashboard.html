@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Donate{% endblock %}
+
+{% block content %}
+    {% if request.user.role == 1 %}
+        <p>
+            you can donate over <a href="{% url "donate" %}">this link</a>.
+        </p>
+    {% elif request.user.role == 2 %}
+        <p>
+            You can request for blood units over <a href="{% url "request" %}">this link</a>.
+        </p>
+        <p>
+            You can follow up your requests over <a href="{% url "request_list" %}">this link</a>.
+        </p>
+    {% endif %}
+{% endblock %}

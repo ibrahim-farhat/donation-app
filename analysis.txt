@@ -1,0 +1,54 @@
+Feature List:
+1- The system provides a registration page for donors to register for the first time.		  done			done
+2- The system provides a login page that supports donors/hospitals login authentication.	  done			done
+3- The system provides a donation page for donors.						  done			done
+4- The system accept/ignore the donation upon the donor status.					  done			done
+5- If the donation was rejected, the system informs the donor by mail.				  done			done
+6- The system provides a registration page for hospitals to register in order to apply requests.  done			done
+7- The system provides a requests page for hospitals to provide their needs.			  done			done
+8- Number of requests must reach 10 requests to be handled by the system.			  done			done
+9- The system maintains an algorithm for the requests' prioritization.				  
+10- The system provides a page to allow hospitals to follow their requests' status.		  done			almost done
+11- The system notifies hospitals via email when there is an update to any of their requests. 	  done
+12- The system manages the blood stock depending on the supply and withdrawal processes.	  done
+13- The system automatically withdraw the expired blood units.
+
+Requirements:
+1- The system maintains the personal information of the donors including the last time they donated.
+2- The system has a way to authinticate the login cradentials.
+3- Registered donors only who can donate.
+4- The system maintains the blood stock on the db by units (each unit will be e.g. 1 litre).
+5- Each blood unit has data about it (blood type, blood bank city, blood expiration date).
+6- The time difference between every donation for each donor must be more than 3 months, otherwise, the donation is rejected.
+7- The donor inputs his blood virus get_most_commented_poststest result in each donation process and the donation will be rejected if the test is positive.
+8- The system has a mailing tool to send mails.
+9- Registered hospitals only can send requests.
+10- The request has the following attributes: 1- blood quantity (by units). 2- blood type. 3- location. 4- patient's status.
+11- The system prioritizes the requests which have the least distance between the donation city and the hospital city.
+12- If two patients have the same distance from the donor, make the priority to the worst status.
+13- The requests are maintained in a queue to be handled 10 by 10.
+
+
+Use Cases:
+Donor -> Register 		-> 1
+Hospital -> Register		-> 6
+Donors/Hospital -> Login	-> 2
+Donor -> Donate			-> 2, 3, 4, 5, 12
+Hospital -> Request		-> 2, 7, 8, 9, 11, 12
+Hospital -> Follow requests	-> 2, 10, 11
+
+
+Modules:
+1- account
+2- donors
+3- hospitals
+4- bank
+5- dashboard
+6- city
+
+
+Imaginary Scenario:
+The donor goes to the central bank and give them the units and the sample to be tested against viruses.
+The bank will inform him by mail about the results of his donation.
+
+I will make this operation done syncronously, untill I learnt how to implement this feature asyncronously.

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Requests{% endblock %}
+
+{% block content %}
+    <h1>Requests</h1>
+    <div class="table-container">
+        <table class="requests-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Units</th>
+                    <th>Blood Type</th>
+                    <th>Patient Status</th>
+                    <th>Request Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in requests %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ request.request_date }}</td>
+                            <td>{{ request.number_of_units }}</td>
+                            <td>{{ request.get_blood_type_display }}</td>
+                            <td>{{ request.get_patient_status_display }}</td>
+                            <td>{{ request.get_request_status_display }}</td>
+                        </tr>
+                {% endfor %}
+            </tbody>    
+        </table>
+    </div>
+    {% include "pagination.html" with page=requests %}
+{% endblock %}
+    

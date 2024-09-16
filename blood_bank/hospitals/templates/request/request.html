@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Donate{% endblock %}
+
+{% block content %}
+    <h1>Request</h1>
+    <p>Please, fill the following form:</p>
+    <form method="post" novalidate>
+        {{ request_form.as_p }}
+        {% csrf_token %}
+        <p><input type="submit" value="Request"></p>
+    </form>
+{% endblock %}
