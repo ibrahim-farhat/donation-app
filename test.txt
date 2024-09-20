@@ -1,0 +1,26 @@
+# status: passed
+1- cairo hospital
+2- mansoura hospital
+3- tanta hospital
+
+cairo will order 2 units
+mansoura will order 2 units
+tanta will order 2 units
+
+the stock has 6 units
+all must be serviced
+
+
+1- cairo hospital
+2- mansoura hospital
+3- tanta hospital
+
+1- cairo donor
+2- mansoura donor
+3- tanta donor
+
+# status: 
+2 units in mansoura
+request from mansoura and cairo and tanta
+expected: mansoura wins
+

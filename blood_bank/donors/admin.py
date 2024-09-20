@@ -4,8 +4,8 @@ from .models import Donor, Donation
 
 @admin.register(Donor)
 class DonorAdmin(admin.ModelAdmin):
-    exclude = []
+    list_display = ['user', 'blood_type', 'last_donation_date']
 
 @admin.register(Donation)
 class DonationAdmin(admin.ModelAdmin):
-    exclude = []
+    list_display = ['donor', 'number_of_units', 'status']

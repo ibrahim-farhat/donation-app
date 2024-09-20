@@ -18,6 +18,8 @@
         <p>
             Please, use the following form to log-in.
             If you don't have an account:
+            <a href="{% url "register_donor" %}">register as donor.</a>
+            <a href="{% url "register_hospital" %}">register as hospital.</a>
         </p>
         <div class="login-form">
             <form action="{% url 'login' %}" method="post">

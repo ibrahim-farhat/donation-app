@@ -4,9 +4,8 @@ from .models import Hospital, HospitalRequest
 
 @admin.register(Hospital)
 class HospitalAdmin(admin.ModelAdmin):
-    exclude = []
+    list_display = ['user', 'hospital_name']
 
 @admin.register(HospitalRequest)
 class HospitalRequestAdmin(admin.ModelAdmin):
-    list_display = ['hospital', 'number_of_units', 'blood_type', 'request_status']
-    exclude = []
+    list_display = ['hospital', 'number_of_units', 'patient_status', 'blood_type', 'request_status']

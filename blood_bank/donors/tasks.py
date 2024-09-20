@@ -55,8 +55,7 @@ def donation_occured(new_donation_id):
                 availability=True,
                 city=donation.donor.user.city
             )
-            units_in_stock = r.incr(f'blood_type:{donation.donor.blood_type}')
-            # print(f'blood_type:{donation.donor.blood_type}')
+            r.incr(f'blood_type:{donation.donor.blood_type}')
 
     send_mail(
         subject=subject,

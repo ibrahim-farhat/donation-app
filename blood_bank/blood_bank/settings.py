@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'city',
     'dashboard',
     'stock',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
