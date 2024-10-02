@@ -1,11 +1,6 @@
-from django.core.mail import send_mail
-
 from celery import shared_task
-from datetime import date
 
-from stock.models import BloodUnit
 from donors.models import Donation
-from blood_bank.redis import r
 
 from .selectors import get_donation_by_id
 from .services import save_donation_result

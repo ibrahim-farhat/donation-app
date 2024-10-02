@@ -1,11 +1,7 @@
-from django.core.mail import send_mail
-
 from celery import shared_task
 from collections import defaultdict
 
-from .models import HospitalRequest
 from stock.models import BloodUnit
-from blood_bank.redis import r
 
 from .selectors import fetch_pending_requests
 from .helpers import send_notification_email, check_stock_availability, classify_requests_by_types, calculate_requests_needed_units, handle_satisfied_type_requests, handle_unsatisfied_type_requests

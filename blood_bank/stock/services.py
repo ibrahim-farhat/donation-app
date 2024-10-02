@@ -1,6 +1,5 @@
 from .models import BloodUnit
 from donors.models import Donation
-# from blood_bank.redis import r
 
 def create_bulk_of_blood_units(donation: Donation) -> None:
     blood_units = []
@@ -17,5 +16,3 @@ def create_bulk_of_blood_units(donation: Donation) -> None:
         )
     
     BloodUnit.objects.bulk_create(blood_units)
-    
-    # r.incrby(f'blood_type:{donation.donor.blood_type}', donation.number_of_units)

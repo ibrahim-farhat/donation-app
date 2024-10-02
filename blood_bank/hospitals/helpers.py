@@ -3,12 +3,10 @@ from django.core.mail import send_mail
 
 from collections import defaultdict
 
-# from blood_bank.redis import r
 from stock.models import BloodUnit
 from stock.selectors import fetch_available_blood_units_by_type, fetch_available_blood_units_ordered_by_city
-from .models import HospitalRequest
 
-DEFAULT_REDIS_COUNT = 0
+from .models import HospitalRequest
 
     
 def classify_requests_by_types(hospital_requests: list[HospitalRequest]) -> dict[BloodUnit.BloodType, list[HospitalRequest]]:
@@ -38,7 +36,6 @@ def check_stock_availability(units_per_type: dict[BloodUnit.BloodType]):
     classified_types = {}
 
     for blood_type, units_needed in units_per_type.items():
-        # available_units = int(r.get(f'blood_type:{blood_type}') or DEFAULT_REDIS_COUNT)
         available_units = len(fetch_available_blood_units_by_type(blood_type))
         classified_types[blood_type] = available_units >= units_needed
 
@@ -47,8 +44,6 @@ def check_stock_availability(units_per_type: dict[BloodUnit.BloodType]):
 def update_database_with_accepted_request(request: HospitalRequest, provided_units: list[BloodUnit]):
     """Free blood units from database and update request status."""
 
-    # Update Redis and database
-    # r.decrby(f'blood_type:{request.blood_type}', request.number_of_units)
     BloodUnit.objects.filter(id__in=[unit.id for unit in provided_units]).update(availability=False)
 
     # Mark the request as accepted
