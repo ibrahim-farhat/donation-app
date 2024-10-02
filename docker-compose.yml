@@ -1,0 +1,67 @@
+services:
+  db:
+    image: postgres:16.2
+    restart: always
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+
+  web:
+    build: .
+    command:  ["./wait-for-it.sh", "db:5432", "--",
+              "uwsgi", "--ini", "/code/config/uwsgi/uwsgi.ini"]
+    restart: always
+    volumes:
+      - .:/code
+    environment:
+      - DJANGO_SETTINGS_MODULE=blood_bank.settings.prod
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    depends_on:
+      - db
+      - redis
+
+  # Celery worker service
+  celery-worker:
+    build: .
+    command: celery -A blood_bank.celery worker --loglevel=info
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+      - web
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6380/0
+      - DJANGO_SETTINGS_MODULE=blood_bank.settings.prod
+
+  # Celery beat service
+  celery-beat:
+    build: .
+    command: celery -A blood_bank.celery beat --loglevel=info
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
+      - web
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6380/0
+      - DJANGO_SETTINGS_MODULE=blood_bank.settings.prod
+
+  # Redis service as a message broker
+  redis:
+    image: redis:alpine
+    ports:
+      - "6380:6380"
+
+  nginx:
+    image: nginx:1.25.5
+    restart: always
+    volumes:
+      - ./config/nginx:/etc/nginx/templates
+      - .:/code
+    ports:
+      - "80:80"

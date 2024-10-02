@@ -7,59 +7,32 @@ from stock.models import BloodUnit
 from donors.models import Donation
 from blood_bank.redis import r
 
+from .selectors import get_donation_by_id
+from .services import save_donation_result
+from .helpers import calculate_days_from_last_donation, DonationEmailCode, send_response_email
+
 @shared_task
 def donation_occured(new_donation_id):
-    # donation.blood_virus_test = random.choice(Donation.VIRUS_TEST_CHOICES)
-    donation = Donation.objects.get(id=new_donation_id)
-    donation.blood_virus_test = Donation.VirusTestResult.NEGATIVE
-    donor = donation.donor
-    subject = (
-        "Your donation process updates"
-    )
+    new_donation = get_donation_by_id(new_donation_id)
+    new_donation.blood_virus_test = Donation.VirusTestResult.NEGATIVE
+    # new_donation.blood_virus_test = random.choice(Donation.VIRUS_TEST_CHOICES)
+    donor = new_donation.donor
     
-    if donation.blood_virus_test == Donation.VirusTestResult.NEGATIVE:
-        current_date = date.today()
-        date_difference = current_date - donor.last_donation_date
-        if date_difference.days > 90:
-            donor.last_donation_date = donation.donation_date
-            donation.status = Donation.RequestStatus.ACCEPTED
-            donor.save()
-            message = (
-                "Your donation has been accepted.\n"
-                "You can donate again after 3 months.\n"
-                "Take care of yourself."
-            )
-        else:
-            donation.status = Donation.RequestStatus.REJECTED
-            message = (
-                "Your donation has been rejected.\n"
-                "We noticed that It has not been three months since your last donation.\n"
-                "We are look forward to seeing you later."
-            )
+    if new_donation.blood_virus_test == Donation.VirusTestResult.NEGATIVE:
         
-    elif donation.blood_virus_test == Donation.VirusTestResult.POSITIVE:
-        donation.status = Donation.RequestStatus.REJECTED
-        message = (
-            "Your donation has been rejected.\n"
-            "Unfortunately, your blood virus test was positive.\n"
-            "We suggest that you go to the nearest hospital for follow-up and we look forward to seeing you when you are better."
-        )
-    donation.save()
+        days_from_last_donation = calculate_days_from_last_donation(donor)
+        
+        if days_from_last_donation <= 90:
+            request_status = Donation.RequestStatus.REJECTED
+            email_code = DonationEmailCode.REJECTED_NOT_ENOUGH_TIME
 
-    if donation.status == Donation.RequestStatus.ACCEPTED:
-        for _ in range(donation.number_of_units):
-            BloodUnit.objects.create(
-                donation=donation,
-                type=donation.donor.blood_type,
-                deposit_date=donation.donation_date,
-                availability=True,
-                city=donation.donor.user.city
-            )
-            r.incr(f'blood_type:{donation.donor.blood_type}')
+        else:
+            request_status = Donation.RequestStatus.ACCEPTED
+            email_code = DonationEmailCode.ACCEPTED
 
-    send_mail(
-        subject=subject,
-        message=message,
-        from_email=None,
-        recipient_list=[donor.user.email]
-    )
+    elif new_donation.blood_virus_test == Donation.VirusTestResult.POSITIVE:
+        request_status = Donation.RequestStatus.REJECTED
+        email_code = DonationEmailCode.REJECTED_POS_VIRUS_TEST
+    
+    save_donation_result(new_donation, request_status)
+    send_response_email(new_donation, email_code)
